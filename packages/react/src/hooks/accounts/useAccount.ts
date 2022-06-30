@@ -20,7 +20,11 @@ export type UseAccountConfig = {
 }
 
 export function useAccount({ onConnect, onDisconnect }: UseAccountConfig = {}) {
-  const account = useSyncExternalStoreWithTracked(watchAccount, getAccount)
+  const account = useSyncExternalStoreWithTracked(
+    watchAccount,
+    getAccount,
+    getAccount,
+  )
 
   const { subscribe } = useClient()
 

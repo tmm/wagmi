@@ -25,7 +25,12 @@ export const Account = () => {
 
   return (
     <div>
-      <div>
+      <div>{account.address}</div>
+      <div>{ensName.data}</div>
+      {account?.address && (
+        <button onClick={() => disconnect.disconnect()}>Disconnect</button>
+      )}
+      {/* <div>
         {ensName.data ?? account?.address}
         {ensName.data ? ` (${account?.address})` : null}
       </div>
@@ -41,9 +46,9 @@ export const Account = () => {
         {isMounted && account?.connector?.name && (
           <span>Connected to {account.connector.name}</span>
         )}
-      </div>
+      </div> */}
 
-      {true && (
+      {/* {true && (
         <>
           {true && (
             <>
@@ -74,7 +79,7 @@ export const Account = () => {
             </>
           )}
         </>
-      )}
+      )} */}
     </div>
   )
 }

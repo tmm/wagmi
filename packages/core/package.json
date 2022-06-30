@@ -98,10 +98,12 @@
   },
   "dependencies": {
     "eventemitter3": "^4.0.7",
+    "js-cookie": "^3.0.1",
     "zustand": "^4.0.0-rc.1"
   },
   "devDependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
+    "@types/js-cookie": "^3.0.2",
     "@walletconnect/ethereum-provider": "^1.7.8",
     "ethers": "^5.6.5"
   },

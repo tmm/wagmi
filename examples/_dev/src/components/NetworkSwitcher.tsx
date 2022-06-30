@@ -10,7 +10,7 @@ export const NetworkSwitcher = () => {
     <div>
       {chain && <div>Using {chain.name}</div>}
 
-      {chains.map((x) => (
+      {/* {chains.map((x) => (
         <button
           disabled={!switchNetwork || x.id === chain?.id}
           key={x.id}
@@ -21,7 +21,7 @@ export const NetworkSwitcher = () => {
         </button>
       ))}
 
-      <div>{error && (error?.message ?? 'Failed to switch')}</div>
+      <div>{error && (error?.message ?? 'Failed to switch')}</div> */}
     </div>
   )
 }

@@ -88,7 +88,7 @@ export type {
 } from './actions'
 
 export { createClient, Client } from './client'
-export type { ClientConfig } from './client'
+export type { ClientConfig, State as ClientState } from './client'
 
 export { Connector, InjectedConnector } from './connectors'
 export type { ConnectorData, ConnectorEvents } from './connectors'
@@ -123,6 +123,8 @@ export {
   UserRejectedRequestError,
 } from './errors'
 
+export { ssrStorage, initializeSsr } from './ssr'
+
 export { createStorage, noopStorage } from './storage'
 export type { ClientStorage as Storage } from './storage'
 
@@ -132,6 +134,7 @@ export type {
   FallbackProviderConfig,
   ProviderWithFallbackConfig,
   Provider,
+  SSRData,
   Unit,
   WebSocketProvider,
 } from './types'

@@ -1,0 +1,41 @@
+{
+  "name": "@wagmi/server",
+  "description": "Server utils for wagmi",
+  "license": "WAGMIT",
+  "version": "0.0.0",
+  "repository": "tmm/wagmi",
+  "author": "awkweb.eth",
+  "ethereum": "awkweb.eth",
+  "funding": [
+    {
+      "type": "gitcoin",
+      "url": "https://gitcoin.co/grants/4493/wagmi-react-hooks-library-for-ethereum"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/tmm"
+    }
+  ],
+  "sideEffects": false,
+  "main": "dist/wagmi-server.cjs.js",
+  "module": "dist/wagmi-server.esm.js",
+  "types": "dist/wagmi-server.cjs.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "module": "./dist/wagmi-server.esm.js",
+      "default": "./dist/wagmi-server.cjs.js"
+    }
+  },
+  "files": [
+    "/dist"
+  ],
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ]
+  },
+  "dependencies": {
+    "@wagmi/core": "workspace:*"
+  }
+}

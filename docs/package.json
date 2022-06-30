@@ -21,7 +21,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "siwe": "^1.1.6",
-    "wagmi": "^0.4.12"
+    "wagmi": "workspace:*"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.6",

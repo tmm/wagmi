@@ -1,5 +1,7 @@
 import { FetchEnsNameArgs, FetchEnsNameResult, fetchEnsName } from '@wagmi/core'
 
+import { useClient } from '../../context'
+
 import { QueryConfig, QueryFunctionArgs } from '../../types'
 import { useChainId, useQuery } from '../utils'
 
@@ -33,15 +35,24 @@ export function useEnsName({
   onSettled,
   onSuccess,
 }: UseEnsNameArgs & UseEnsNameConfig = {}) {
+  const client = useClient()
   const chainId = useChainId({ chainId: chainId_ })
+
+  const ensNameCookie = client.ssrStorage?.getItem<
+    Awaited<ReturnType<typeof queryFn>>
+  >('ensName', [address, chainId])
 
   return useQuery(queryKey({ address, chainId }), queryFn, {
     cacheTime,
     enabled: Boolean(enabled && address && chainId),
+    initialData: ensNameCookie,
     staleTime,
     suspense,
     onError,
     onSettled,
-    onSuccess,
+    onSuccess: (data) => {
+      client.ssrStorage?.setItem('ensName', data, [address, chainId])
+      onSuccess?.(data)
+    },
   })
 }

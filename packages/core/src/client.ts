@@ -1,5 +1,6 @@
 import { Mutate, StoreApi, default as create } from 'zustand/vanilla'
 import { persist, subscribeWithSelector } from 'zustand/middleware'
+import shallow from 'zustand/shallow'
 
 import { Connector, ConnectorData, InjectedConnector } from './connectors'
 import { ClientStorage, createStorage, noopStorage } from './storage'
@@ -11,6 +12,10 @@ export type ClientConfig<
 > = {
   /** Enables reconnecting to last used connector on init */
   autoConnect?: boolean
+  /**
+   * Custom storage for SSR persistance
+   */
+  ssrStorage?: ClientStorage
   /**
    * Connectors used for linking accounts
    * @default [new InjectedConnector()]
@@ -51,6 +56,7 @@ export class Client<
   TWebSocketProvider extends WebSocketProvider = WebSocketProvider,
 > {
   config: Partial<ClientConfig<TProvider, TWebSocketProvider>>
+  ssrStorage?: ClientStorage
   storage: ClientStorage
   store: Mutate<
     StoreApi<State<TProvider, TWebSocketProvider>>,
@@ -65,6 +71,7 @@ export class Client<
 
   constructor({
     autoConnect = false,
+    ssrStorage,
     connectors = [new InjectedConnector()],
     provider,
     storage = createStorage({
@@ -78,7 +85,7 @@ export class Client<
     let chainId: number | undefined
     if (autoConnect) {
       try {
-        const rawState = storage.getItem(storeKey, '')
+        const rawState = storage.getItem<string>(storeKey) || ''
         const data: Data<TProvider> | undefined = JSON.parse(rawState || '{}')
           ?.state?.data
         // If account exists in localStorage, set status to reconnecting
@@ -131,6 +138,7 @@ export class Client<
       storage,
       webSocketProvider,
     }
+    this.ssrStorage = ssrStorage
     this.storage = storage
     this.#lastUsedConnector = storage?.getItem('wallet')
     this.#addEffects()
@@ -270,6 +278,28 @@ export class Client<
         connector.on?.('disconnect', onDisconnect)
         connector.on?.('error', onError)
       },
+    )
+
+    this.store.subscribe(
+      ({ data, connectors, status }) => ({
+        account: data?.account,
+        chainId: data?.chain?.id,
+        connectors,
+        status,
+      }),
+      ({ account, chainId, connectors, status }) => {
+        this.ssrStorage?.setItem('account', account ?? null)
+        this.ssrStorage?.setItem('chainId', chainId ?? null)
+        this.ssrStorage?.setItem('status', status ?? null)
+
+        const connectors_ = connectors?.map((x) => ({
+          id: x.id,
+          name: x.name,
+          ready: x.ready,
+        }))
+        this.ssrStorage?.setItem('connectors', connectors_)
+      },
+      { equalityFn: shallow },
     )
 
     const { provider, webSocketProvider } = this.config

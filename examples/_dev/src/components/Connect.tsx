@@ -18,7 +18,7 @@ export const Connect = () => {
             key={x.name}
             onClick={() => connect({ connector: x })}
           >
-            {x.id === 'injected' ? (isMounted ? x.name : x.id) : x.name}
+            {x.name}
             {isMounted && !x.ready && ' (unsupported)'}
             {isLoading && x.id === pendingConnector?.id && '…'}
           </button>

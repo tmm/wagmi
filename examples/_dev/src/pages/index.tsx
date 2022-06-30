@@ -1,12 +1,20 @@
 import * as React from 'react'
+import { GetServerSidePropsContext } from 'next'
+
+// TODO(jxom): fix
+import { getSsrData } from '../../../../packages/react/server'
 
 import { Account, Connect, NetworkSwitcher } from '../components'
-import { useIsMounted } from '../hooks'
 
-const Page = () => {
-  const isMounted = useIsMounted()
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return {
+    props: {
+      wagmiSsr: getSsrData(ctx.req),
+    },
+  }
+}
 
-  if (!isMounted) return null
+const Page = (props) => {
   return (
     <>
       <Connect />

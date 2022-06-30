@@ -51,6 +51,10 @@ export type ChainProviderFn<
   webSocketProvider?: () => TWebSocketProvider
 } | null
 
+export type SSRData = {
+  cookies: { [key: string]: string | undefined }
+}
+
 export type FallbackProviderConfig = Omit<
   providers.FallbackProviderConfig,
   'provider'

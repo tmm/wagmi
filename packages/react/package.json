@@ -62,13 +62,18 @@
     "./providers/public": {
       "module": "./providers/public/dist/wagmi-providers-public.esm.js",
       "default": "./providers/public/dist/wagmi-providers-public.cjs.js"
+    },
+    "./server": {
+      "module": "./providers/public/dist/wagmi-server.esm.js",
+      "default": "./providers/public/dist/wagmi-server.cjs.js"
     }
   },
   "files": [
     "/chains",
     "/connectors",
     "/dist",
-    "/providers"
+    "/providers",
+    "/server"
   ],
   "preconstruct": {
     "entrypoints": [
@@ -81,7 +86,8 @@
       "providers/alchemy.ts",
       "providers/public.ts",
       "providers/infura.ts",
-      "providers/jsonRpc.ts"
+      "providers/jsonRpc.ts",
+      "server/index.ts"
     ]
   },
   "peerDependencies": {
@@ -90,7 +96,8 @@
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
-    "@wagmi/core": "^0.3.8",
+    "@wagmi/core": "workspace:*",
+    "@wagmi/server": "workspace:*",
     "@walletconnect/ethereum-provider": "^1.7.8",
     "react-query": "^4.0.0-beta.23",
     "use-sync-external-store": "^1.1.0"

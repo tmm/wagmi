@@ -2,9 +2,11 @@ import * as React from 'react'
 import {
   ClientConfig,
   Provider,
+  SSRData,
   Client as VanillaClient,
   WebSocketProvider,
   createClient as createVanillaClient,
+  initializeSsr,
 } from '@wagmi/core'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { Persister, persistQueryClient } from 'react-query/persistQueryClient'
@@ -73,6 +75,7 @@ export type WagmiConfigProps<
 > = {
   /** React-decorated Client instance */
   client: Client<TProvider, TWebSocketProvider>
+  ssrData?: SSRData
 }
 export function WagmiConfig<
   TProvider extends Provider,
@@ -80,7 +83,10 @@ export function WagmiConfig<
 >({
   children,
   client,
+  ssrData,
 }: React.PropsWithChildren<WagmiConfigProps<TProvider, TWebSocketProvider>>) {
+  if (typeof window === 'undefined' && ssrData) initializeSsr(ssrData)
+
   // Attempt to connect on mount
   React.useEffect(() => {
     ;(async () => {

@@ -58,6 +58,8 @@ export {
   etherscanBlockExplorers,
   infuraRpcUrls,
   readContracts,
+  ssrStorage,
+  setSsrData,
   AddChainError,
   ChainDoesNotSupportMulticallError,
   ChainMismatchError,

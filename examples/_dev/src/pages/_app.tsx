@@ -7,7 +7,9 @@ import {
   chain,
   configureChains,
   createClient,
+  createStorage,
   defaultChains,
+  ssrStorage,
 } from 'wagmi'
 
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
@@ -61,6 +63,7 @@ const { chains, provider, webSocketProvider } = configureChains(
 
 const client = createClient({
   autoConnect: true,
+  ssrStorage: createStorage({ storage: ssrStorage }),
   connectors: [
     new MetaMaskConnector({ chains }),
     new CoinbaseWalletConnector({
@@ -99,7 +102,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <title>wagmi</title>
       </NextHead>
 
-      <WagmiConfig client={client}>
+      <WagmiConfig client={client} ssrData={pageProps.wagmiSsr}>
         <Component {...pageProps} />
       </WagmiConfig>
     </>

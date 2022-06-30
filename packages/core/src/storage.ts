@@ -1,9 +1,26 @@
-type BaseStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
+export type BaseStorage = {
+  getItem: (key: string) => string | null
+  setItem: (key: string, value: string) => void
+  removeItem: (key: string) => void
+}
 
 export type ClientStorage = {
-  getItem: <T>(key: string, defaultState?: T | null) => T | null
-  setItem: <T>(key: string, value: T | null) => void
-  removeItem: (key: string) => void
+  getKey: (
+    key: string,
+    keyDeps?: (string | number | undefined)[],
+    { includePrefix }?: { includePrefix?: boolean },
+  ) => string
+  getItem: <T>(
+    key: string,
+    keyDeps?: (string | number | undefined)[],
+    defaultValue?: string,
+  ) => T | null
+  setItem: <T>(
+    key: string,
+    value: T | null,
+    keyDeps?: (string | number | undefined)[],
+  ) => void
+  removeItem: (key: string, keyDeps?: (string | number | undefined)[]) => void
 }
 
 export const noopStorage: BaseStorage = {
@@ -13,34 +30,49 @@ export const noopStorage: BaseStorage = {
 }
 
 export function createStorage({
+  serialize = JSON.stringify,
+  deserialize = JSON.parse,
   storage,
   key: prefix = 'wagmi',
 }: {
+  deserialize?: (value: string) => any
+  serialize?: (value: any) => string
   storage: BaseStorage
   key?: string
 }): ClientStorage {
+  const getKey = (
+    key: string,
+    keyDeps?: (string | number | undefined)[],
+    { includePrefix = true }: { includePrefix?: boolean } = {},
+  ) => {
+    const key_ = keyDeps ? `${key}.${keyDeps.join('.')}` : key
+    return `${includePrefix ? `${prefix}.` : ''}${key_}`
+  }
   return {
     ...storage,
-    getItem: (key, defaultState = null) => {
-      const value = storage.getItem(`${prefix}.${key}`)
+    getKey,
+    getItem: (key, keyDeps) => {
+      const value = storage.getItem(getKey(key, keyDeps))
       try {
-        return value ? JSON.parse(value) : defaultState
+        return value ? deserialize(value) : null
       } catch (error) {
         console.warn(error)
-        return defaultState
+        return null
       }
     },
-    setItem: (key, value) => {
+    setItem: (key, value, keyDeps) => {
       if (value === null) {
-        storage.removeItem(`${prefix}.${key}`)
+        storage.removeItem(getKey(key, keyDeps))
       } else {
         try {
-          storage.setItem(`${prefix}.${key}`, JSON.stringify(value))
+          storage.setItem(getKey(key, keyDeps), serialize(value))
         } catch (err) {
           console.error(err)
         }
       }
     },
-    removeItem: (key) => storage.removeItem(`${prefix}.${key}`),
+    removeItem: (key, keyDeps) => {
+      storage.removeItem(getKey(key, keyDeps))
+    },
   }
 }

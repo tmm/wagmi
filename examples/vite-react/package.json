@@ -15,7 +15,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "util": "^0.12.4",
-    "wagmi": "^0.4.12"
+    "wagmi": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.0.9",
