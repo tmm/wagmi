@@ -1,13 +1,19 @@
-import { FetchEnsNameArgs, FetchEnsNameResult, fetchEnsName } from '@wagmi/core'
+import {
+  FetchEnsNameArgs,
+  FetchEnsNameResult,
+  Provider,
+  WebSocketProvider,
+  fetchEnsName,
+} from '@wagmi/core'
 
-import { QueryConfig, QueryFunctionArgs } from '../../types'
+import { Client, QueryConfig, QueryFunctionArgs } from '../../types'
 import { useChainId, useQuery } from '../utils'
 
 export type UseEnsNameArgs = Partial<FetchEnsNameArgs>
 
 export type UseEnsNameConfig = QueryConfig<FetchEnsNameResult, Error>
 
-export const queryKey = ({
+const queryKey = ({
   address,
   chainId,
 }: {
@@ -44,4 +50,11 @@ export function useEnsName({
     onSettled,
     onSuccess,
   })
+}
+
+export async function prefetchEnsName<
+  TProvider extends Provider = Provider,
+  TWebSocketProvider extends WebSocketProvider = WebSocketProvider,
+>(client: Client<TProvider, TWebSocketProvider>, args: FetchEnsNameArgs) {
+  await client.queryClient.prefetchQuery(queryKey(args), queryFn)
 }

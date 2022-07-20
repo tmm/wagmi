@@ -74,8 +74,8 @@ export function useSwitchNetwork({
   // Trigger update when connector changes since not all connectors support chain switching
   React.useEffect(() => {
     const unwatch = client.subscribe(
-      ({ chains, connector }) => ({
-        chains,
+      ({ connector }) => ({
+        chains: connector?.chains,
         connector,
       }),
       forceUpdate,
@@ -92,7 +92,7 @@ export function useSwitchNetwork({
   }
 
   return {
-    chains: client.chains ?? [],
+    chains: client.connector?.chains ?? [],
     data,
     error,
     isError,

@@ -8,9 +8,9 @@ import '@testing-library/jest-dom/extend-expect'
 import { QueryClient } from 'react-query'
 
 import { WagmiConfig } from '../src'
+import { Client } from '../src/types'
 import { setupClient } from './utils'
 import { reactVersion } from './setup'
-import { Client } from '../src/context'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

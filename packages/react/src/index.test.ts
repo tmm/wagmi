@@ -73,7 +73,3 @@ it('should expose correct exports', () => {
     ]
   `)
 })
-
-it('should alias "WagmiConfig" as "WagmiProvider"', () => {
-  expect(Exports.WagmiConfig).toBe(Exports.WagmiProvider)
-})

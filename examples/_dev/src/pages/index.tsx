@@ -1,12 +1,36 @@
 import * as React from 'react'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import {
+  DehydratedState,
+  dehydrate,
+  extractState,
+  prefetchEnsName,
+} from 'wagmi'
 
 import { Account, Connect, NetworkSwitcher } from '../components'
-import { useIsMounted } from '../hooks'
+import { client } from '../wagmi'
 
-const Page = () => {
-  const isMounted = useIsMounted()
+type ServerProps = {
+  dehydratedState: DehydratedState
+}
 
-  if (!isMounted) return null
+export const getServerSideProps: GetServerSideProps<ServerProps> = async ({
+  req,
+}) => {
+  const state = extractState(client, req)
+  if (state.account)
+    await prefetchEnsName(client, { address: state.account, chainId: 1 })
+
+  return {
+    props: {
+      dehydratedState: dehydrate(client, state),
+    },
+  }
+}
+
+type Props = InferGetServerSidePropsType<typeof getServerSideProps>
+
+const Page = (_props: Props) => {
   return (
     <>
       <Connect />

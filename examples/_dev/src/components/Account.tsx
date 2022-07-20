@@ -13,34 +13,33 @@ import { WriteContract } from './WriteContract'
 
 export const Account = () => {
   const isMounted = useIsMounted()
-  const account = useAccount({
+  const { address, connector } = useAccount({
     onConnect: (data) => console.log('connected', data),
     onDisconnect: () => console.log('disconnected'),
   })
-  const ensAvatar = useEnsAvatar({
-    addressOrName: account?.address,
+  const { data: ensAvatar } = useEnsAvatar({
+    addressOrName: address,
     chainId: 1,
   })
-  const ensName = useEnsName({ address: account?.address, chainId: 1 })
-  const disconnect = useDisconnect()
+  const { data: ensName } = useEnsName({
+    address,
+    chainId: 1,
+  })
+  const { disconnect } = useDisconnect()
 
   return (
     <div>
       <div>
-        {ensName.data ?? account?.address}
-        {ensName.data ? ` (${account?.address})` : null}
+        {ensName ?? address}
+        {ensName ? ` (${address})` : null}
       </div>
 
-      {ensAvatar.data && (
-        <img src={ensAvatar.data} style={{ height: 40, width: 40 }} />
-      )}
+      {ensAvatar && <img src={ensAvatar} style={{ height: 40, width: 40 }} />}
 
       <div>
-        {account?.address && (
-          <button onClick={() => disconnect.disconnect()}>Disconnect</button>
-        )}
-        {isMounted && account?.connector?.name && (
-          <span>Connected to {account.connector.name}</span>
+        {address && <button onClick={() => disconnect()}>Disconnect</button>}
+        {isMounted && connector?.name && (
+          <span>Connected to {connector.name}</span>
         )}
       </div>
 

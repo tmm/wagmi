@@ -17,7 +17,8 @@ export function watchNetwork(
   const client = getClient()
   const handleChange = () => callback(getNetwork())
   const unsubscribe = client.subscribe(
-    ({ data, chains }) => selector({ chainId: data?.chain?.id, chains }),
+    ({ data, connector }) =>
+      selector({ chainId: data?.chain?.id, chains: connector?.chains }),
     handleChange,
     {
       equalityFn: shallow,

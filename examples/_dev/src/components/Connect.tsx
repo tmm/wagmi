@@ -14,11 +14,14 @@ export const Connect = () => {
       <div>
         {connectors.map((x) => (
           <button
-            disabled={!x.ready || isReconnecting || connector?.id === x.id}
+            disabled={
+              isMounted &&
+              (!x.ready || isReconnecting || connector?.id === x.id)
+            }
             key={x.name}
             onClick={() => connect({ connector: x })}
           >
-            {x.id === 'injected' ? (isMounted ? x.name : x.id) : x.name}
+            {x.name}
             {isMounted && !x.ready && ' (unsupported)'}
             {isLoading && x.id === pendingConnector?.id && '…'}
           </button>

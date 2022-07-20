@@ -21,7 +21,13 @@ export {
   useToken,
 } from './contracts'
 
-export { useEnsAddress, useEnsAvatar, useEnsName, useEnsResolver } from './ens'
+export {
+  prefetchEnsName,
+  useEnsAddress,
+  useEnsAvatar,
+  useEnsName,
+  useEnsResolver,
+} from './ens'
 
 export { useBlockNumber, useFeeData } from './network-status'
 

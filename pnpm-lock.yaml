@@ -152,6 +152,7 @@ importers:
       eslint: ^8.15.0
       eslint-config-next: ^12.1.6
       ethers: ^5.6.5
+      js-cookie: ^3.0.1
       next: ^12.1.6
       react: ^18.1.0
       react-dom: ^18.1.0
@@ -159,6 +160,7 @@ importers:
       wagmi: ^0.5.11
     dependencies:
       ethers: 5.6.5
+      js-cookie: 3.0.1
       next: 12.1.6_ef5jwxihqo6n7gxfmzogljlgcm
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
@@ -15522,6 +15524,11 @@ packages:
       '@sideway/formula': 3.0.0
       '@sideway/pinpoint': 2.0.0
     dev: true
+
+  /js-cookie/3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
+    dev: false
 
   /js-levenshtein/1.1.6:
     resolution: {integrity: sha512-X2BB11YZtrRqY4EnQcLX5Rh373zbK4alC1FW7D7MBhL2gtcC17cTnr6DmfHZeS0s2rTHjUTMMHfG7gO8SSdw+g==}

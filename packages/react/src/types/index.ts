@@ -1,9 +1,16 @@
 import {
+  QueryClient,
   QueryFunctionContext,
   UseInfiniteQueryOptions,
   UseMutationOptions,
   UseQueryOptions,
 } from 'react-query'
+import { Client as BaseClient, Provider, WebSocketProvider } from '@wagmi/core'
+
+export type Client<
+  TProvider extends Provider = Provider,
+  TWebSocketProvider extends WebSocketProvider = WebSocketProvider,
+> = BaseClient<TProvider, TWebSocketProvider> & { queryClient: QueryClient }
 
 export type QueryFunctionArgs<T extends (...args: any) => any> =
   QueryFunctionContext<ReturnType<T>>
