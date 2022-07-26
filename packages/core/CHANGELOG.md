@@ -1,5 +1,205 @@
 # @wagmi/core
 
+## 0.5.0
+
+### Minor Changes
+
+- [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - **Breaking**: The configuration passed to the `sendTransaction` action now needs to be:
+
+  - prepared with the `prepareSendTransaction` action **(new functionality)**, or
+  - recklessly unprepared **(previous functionality)**
+
+  > Why? [Read here](https://wagmi.sh/docs/prepare-hooks/intro)
+
+  ### Prepared usage
+
+  ```diff
+  import { prepareSendTransaction, sendTransaction } from '@wagmi/core'
+
+  +const config = await prepareSendTransaction({
+  +  request: {
+  +    to: 'moxey.eth',
+  +    value: parseEther('1'),
+  +  }
+  +})
+
+  const result = await sendTransaction({
+  - request: {
+  -   to: 'moxey.eth',
+  -   value: parseEther('1')
+  - }
+  + ...config
+  })
+  ```
+
+  ### Recklessly unprepared usage
+
+  It is possible to use `sendTransaction` without preparing the configuration first by passing `mode: 'recklesslyUnprepared'`.
+
+  ```diff
+  import { sendTransaction } from '@wagmi/core'
+
+  const result = await sendTransaction({
+  + mode: 'recklesslyUnprepared',
+    request: {
+      to: 'moxey.eth',
+      value: parseEther('1'),
+    }
+  })
+  ```
+
+* [#760](https://github.com/wagmi-dev/wagmi/pull/760) [`d8af6bf`](https://github.com/wagmi-dev/wagmi/commit/d8af6bf50885aec110ae4d64716642453aa27896) Thanks [@tmm](https://github.com/tmm)! - **Breaking:** `alchemyProvider` and `infuraProvider` now use a generic `apiKey` configuration option instead of `alchemyId` and `infuraId`.
+
+  ```diff
+  import { alchemyProvider } from '@wagmi/core/providers/alchemy'
+  import { infuraProvider } from '@wagmi/core/providers/infura'
+
+  alchemyProvider({
+  -  alchemyId: 'yourAlchemyApiKey',
+  +  apiKey: 'yourAlchemyApiKey',
+  })
+
+  infuraProvider({
+  -  infuraId: 'yourInfuraApiKey',
+  +  apiKey: 'yourInfuraApiKey',
+  })
+  ```
+
+- [#727](https://github.com/wagmi-dev/wagmi/pull/727) [`ac3b9b8`](https://github.com/wagmi-dev/wagmi/commit/ac3b9b87f80cb45b65d003f09d916d7d1427a62e) Thanks [@tmm](https://github.com/tmm)! - **Breaking**: Moved the `pollingInterval` config option from the chain provider config to `configureChains` config.
+
+  ```diff
+  const { chains, provider } = configureChains(
+    [chain.mainnet, chain.polygon],
+    [
+  -   alchemyProvider({ apiKey, pollingInterval: 5000 }),
+  -   publicProvider({ pollingInterval: 5000 })
+  +   alchemyProvider({ apiKey }),
+  +   publicProvider()
+    ],
+  + { pollingInterval: 5000 }
+  )
+  ```
+
+* [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - **Breaking:** The `sendTransaction` action now returns an object only consisting of `hash` & `wait`, and not the full [`TransactionResponse`](https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse).
+
+  If you require the full `TransactionResponse`, you can use `fetchTransaction`:
+
+  ```diff
+  import { sendTransaction, fetchTransaction } from '@wagmi/core'
+
+  const {
+    hash,
+    wait,
+  - ...transaction
+  } = sendTransaction(...)
+
+  +const transaction = fetchTransaction({ hash })
+  ```
+
+  > Why? The old implementation of `sendTransaction` created a long-running async task, causing [UX pitfalls](https://wagmi.sh/docs/prepare-hooks/intro#ux-pitfalls-without-prepare-hooks) when invoked in a click handler.
+
+- [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - **Breaking**: If a `chainId` is passed to `writeContract` or `sendTransaction`, it will no longer attempt to switch chain before sending the transaction. Instead, it will throw an error if the user is on the wrong chain.
+
+  > Why?
+  >
+  > - Eagerly prompting to switch chain in these actions created a long-running async task that that makes [iOS App Links](https://wagmi.sh/docs/prepare-hooks/intro#ios-app-link-constraints) vulnerable.
+  > - Not all wallets support programmatic chain switching.
+
+### Patch Changes
+
+- [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - **Breaking**: The configuration passed to the `writeContract` action now needs to be:
+
+  - prepared with the `prepareWriteContract` action **(new functionality)**, or
+  - recklessly unprepared **(previous functionality)**
+
+  > Why? [Read here](https://wagmi.sh/docs/prepare-hooks/intro)
+
+  ### Prepared usage
+
+  ```diff
+  import { prepareWriteContract, writeContract } from '@wagmi/core'
+
+  const tokenId = 69
+
+  +const config = await prepareWriteContract({
+  + addressOrName: '0x...',
+  + contractInterface: wagmiAbi,
+  + functionName: 'mint',
+  + args: [tokenId]
+  +})
+
+  const result = await writeContract({
+  - addressOrName: '0x...',
+  - contractInterface: wagmiAbi,
+  - functionName: 'mint',
+  - args: [tokenId],
+  + ...config
+  })
+  ```
+
+  ### Recklessly unprepared usage
+
+  It is possible to use `writeContract` without preparing the configuration first by passing `mode: 'recklesslyUnprepared'`.
+
+  ```diff
+  import { writeContract } from '@wagmi/core'
+
+  const tokenId = 69
+
+  const result = await writeContract({
+  + mode: 'recklesslyUnprepared',
+    addressOrName: '0x...',
+    contractInterface: wagmiAbi,
+    functionName: 'mint',
+    args: [tokenId],
+  })
+  ```
+
+* [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - Added the `prepareSendTransaction` hook that prepares the parameters required for sending a transaction.
+
+  It returns config to be passed through to `sendTransaction`.
+
+  ```ts
+  import { prepareSendTransaction, sendTransaction } from '@wagmi/core'
+
+  const config = await prepareSendTransaction({
+    request: {
+      to: 'moxey.eth',
+      value: parseEther('1'),
+    },
+  })
+  const result = await sendTransaction(config)
+  ```
+
+- [#658](https://github.com/wagmi-dev/wagmi/pull/658) [`d70c115`](https://github.com/wagmi-dev/wagmi/commit/d70c115131f299fb61f87867b6ac4218e0bcf432) Thanks [@jxom](https://github.com/jxom)! - Added the `prepareWriteContract` hook that prepares the parameters required for a contract write transaction.
+
+  It returns config to be passed through to `writeContract`.
+
+  Example:
+
+  ```tsx
+  import { prepareWriteContract, writeContract } from '@wagmi/core'
+
+  const config = await prepareWriteContract({
+    addressOrName: '0x...',
+    contractInterface: wagmiAbi,
+    functionName: 'mint',
+  })
+  const result = await writeContract(config)
+  ```
+
+* [#739](https://github.com/wagmi-dev/wagmi/pull/739) [`c2295a5`](https://github.com/wagmi-dev/wagmi/commit/c2295a56cc86d02cc6602e2b4557b8ab9a091a3f) Thanks [@tmm](https://github.com/tmm)! - Fix balance formatting for tokens that do not have 18 decimals.
+
+- [#759](https://github.com/wagmi-dev/wagmi/pull/759) [`959953d`](https://github.com/wagmi-dev/wagmi/commit/959953d1f5b3e8189bac56de245c62333470d18e) Thanks [@tmm](https://github.com/tmm)! - Added `fetchTransaction` action:
+
+  ```ts
+  import { fetchTransaction } from '@wagmi/core'
+
+  const transaction = await fetchTransaction({
+    hash: '0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060',
+  })
+  ```
+
 ## 0.4.9
 
 ### Patch Changes

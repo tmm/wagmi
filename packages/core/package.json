@@ -2,7 +2,7 @@
   "name": "@wagmi/core",
   "description": "Vanilla JS library for Ethereum",
   "license": "WAGMIT",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/wagmi-dev/wagmi.git",
